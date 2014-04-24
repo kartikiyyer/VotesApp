@@ -2,9 +2,11 @@ package com.votesapp;
 
 import java.net.UnknownHostException;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
@@ -66,7 +68,7 @@ public class User {
     }
 	
 	@POST
-    @Path("/group/create")
+    @Path("/group")
 	public void createGroup(@FormParam("group") String group) throws JSONException{
 		System.out.println("-----------Inside createGroup()----------");
 		JSONObject jgroup = new JSONObject(group);
@@ -84,8 +86,54 @@ public class User {
 		System.out.println("-----------Exiting createGroup()-------------");
     }
 	
+	@PUT
+    @Path("/group")
+	public void editGroup(@FormParam("group") String group) throws JSONException{
+		System.out.println("-----------Inside editGroup()----------");
+		JSONObject jgroup = new JSONObject(group);
+		System.out.println("Group: " + jgroup);
+		try { 		
+		    System.out.println("Updating data");
+	        DBCollection groupCollection = db.getCollection("group");
+	        BasicDBObject dbGroup = new BasicDBObject();
+	        BasicDBObject dbWhere = new BasicDBObject();
+	        dbGroup.putAll((DBObject)JSON.parse(jgroup.toString()));
+	        dbWhere.put("_id", new ObjectId(jgroup.getString("_id")));
+	        groupCollection.update(dbWhere, dbGroup);
+	        System.out.println("Data updated");
+	      } catch (Exception e) { 
+	    	  e.printStackTrace(); 
+	      }
+		System.out.println("-----------Exiting editGroup()-------------");
+    }
+	
+	
+	@DELETE
+    @Path("/group")
+	public void deleteGroup(@FormParam("id") String id) throws JSONException{
+		System.out.println("-----------Inside deleteGroup()----------");
+		//JSONObject jgroup = new JSONObject(group);
+		//System.out.println("Group: " + jgroup);
+		try { 		
+		    System.out.println("Deleting data");
+	        DBCollection groupCollection = db.getCollection("group");
+	        BasicDBObject dbGroup = new BasicDBObject();
+	        BasicDBObject dbWhere = new BasicDBObject();
+	        dbWhere.put("_id", new ObjectId(id));
+	        dbGroup.append("$set", new BasicDBObject().append("deleted", true));
+	        groupCollection.update(dbWhere, dbGroup);
+	        /*BasicDBObject dbGroup = new BasicDBObject();
+	        dbGroup.put("_id",new ObjectId(id));
+	        WriteResult wr = groupCollection.remove(dbGroup);*/
+	        System.out.println("Data deleted");
+	    } catch (Exception e) { 
+	    	  e.printStackTrace(); 
+	      }
+		System.out.println("-----------Exiting deleteGroup()-------------");
+    }
+	
 	@GET
-    @Path("/group/show")
+    @Path("/group")
 	public String showGroupDetails(@QueryParam("id") String id) throws JSONException{
 		System.out.println("-------------Inside showGroup()-------------");
 		System.out.println("Group id: "+id);
@@ -110,10 +158,5 @@ public class User {
 	      }
 		System.out.println("---------------Exiting showGroup()----------------");
 		return group;
-    }
-	
-	
-	
-	
-	
+    }	
 }
