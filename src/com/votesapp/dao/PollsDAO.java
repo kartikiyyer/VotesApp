@@ -1,5 +1,8 @@
 package com.votesapp.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
@@ -35,13 +38,13 @@ public class PollsDAO implements IPollsDAO{
 				/*BasicDBObject whereQuery = new BasicDBObject();
 				whereQuery.put("_id", new ObjectId("put your id here"));*/
 
-				BasicDBObject whereQuery = new BasicDBObject();
+				/*BasicDBObject whereQuery = new BasicDBObject();
 				whereQuery.put("poll_creator", "4084553112");
 				DBCursor cursor = table.find();
 				while(cursor.hasNext()) {
 					DBObject getdata=cursor.next();
 					System.out.println("poll created and poll id is: "+getdata.get("_id"));				
-				}
+				}*/
 
 				result.put("Msg", "success");
 			}else{
@@ -97,7 +100,7 @@ public class PollsDAO implements IPollsDAO{
 
 	public String showAllPolls() throws Exception {
 		JSONObject result= new JSONObject();
-		JSONObject cursorResult;
+//		JSONObject cursorResult;
 		System.out.println("in showPoll...");
 		try{
 			MongoClient mongo = new MongoClient( ipaddress , 53838 );
@@ -160,7 +163,192 @@ public class PollsDAO implements IPollsDAO{
 		return result.toString();
 	}
 
+	
+	public String showPollsByGroup(String userName) throws Exception{
+		JSONObject result= new JSONObject();
+		JSONObject cursorResult1;
+		System.out.println("in showPollsByGroup...");
+		try{
+			MongoClient mongo = new MongoClient( ipaddress , 53838 );
+			DB db = mongo.getDB("votesapp");
+			boolean auth = db.authenticate("admin", "password@123".toCharArray());
+			if(auth){
+				System.out.println("connection successfull");
+				DBCollection table = db.getCollection("group");
 
+				BasicDBObject whereQuery = new BasicDBObject();
+				whereQuery.put("members", userName);
+				DBCursor cursor = table.find(whereQuery);
+				DBObject getdata;
+				JSONArray cursorResult=new JSONArray();
+				while(cursor.hasNext()) {
+					getdata=cursor.next();
+					
+					cursorResult.put(getdata.get("_id"));
+
+				}
+				System.out.println("Groups assigned to "+userName+" are: "+cursorResult.toString());
+				
+				DBCollection table1 = db.getCollection("polls");
+				BasicDBObject whereQuery1;
+				JSONArray resultJson1=new JSONArray();
+				
+				for(int i=0;i<cursorResult.length();i++){
+					whereQuery1 = new BasicDBObject();
+					System.out.println("cursorResult: "+cursorResult.get(i).toString());
+					whereQuery1.put("poll_groupid", cursorResult.get(i).toString());
+					System.out.println("whereQuery1: "+whereQuery1);
+					DBCursor cursor1 = table1.find(whereQuery1);
+					DBObject getdata1;
+					
+					while(cursor1.hasNext()) {
+						getdata1=cursor1.next();
+						cursorResult1=new JSONObject();
+						
+						cursorResult1.put("poll_id",getdata1.get("_id"));
+						cursorResult1.put("poll_question",getdata1.get("poll_question"));
+						cursorResult1.put("poll_options",getdata1.get("poll_options"));
+						cursorResult1.put("poll_create_date",getdata1.get("poll_create_date"));
+						cursorResult1.put("poll_end_date",getdata1.get("poll_end_date"));
+						cursorResult1.put("poll_creator",getdata1.get("poll_creator"));
+						cursorResult1.put("poll_category",getdata1.get("poll_category"));
+						cursorResult1.put("poll_groupid",getdata1.get("poll_groupid"));
+						cursorResult1.put("poll_participants",getdata1.get("poll_participants"));
+						
+						System.out.println("cursorResult1 : "+cursorResult1);
+						
+						resultJson1.put(cursorResult1);
+					}
+				}
+				result.put("My_Polls", resultJson1);
+				result.put("Msg", "success");
+
+			}else{
+				System.out.println("can not connect");
+				result.put("Msg", "fail");
+			}
+
+		}catch (MongoException me) { 
+			result.put("Msg", "fail");
+			me.printStackTrace(); 
+		} catch(Exception e){
+			result.put("Msg", "fail");
+			e.printStackTrace();
+		}
+		System.out.println("show polls by group: "+result);
+		return result.toString();
+	}
+	
+	
+	
+	public String showAllPollsAssignedToMe(String userName) throws Exception{
+		JSONObject result= new JSONObject();
+		JSONObject cursorResult1;
+		System.out.println("in showAllPollsAssignedToMe...");
+		try{
+			MongoClient mongo = new MongoClient( ipaddress , 53838 );
+			DB db = mongo.getDB("votesapp");
+			boolean auth = db.authenticate("admin", "password@123".toCharArray());
+			if(auth){
+				System.out.println("connection successfull");
+				
+				//cursorResult will contain all the groupid in which this user is member
+				DBCollection table = db.getCollection("group");
+				BasicDBObject whereQuery = new BasicDBObject();
+				whereQuery.put("members", userName);
+				DBCursor cursor = table.find(whereQuery);
+				DBObject getdata;
+				JSONArray cursorResult=new JSONArray();
+				while(cursor.hasNext()) {
+					getdata=cursor.next();
+					
+					cursorResult.put(getdata.get("_id"));
+
+				}
+				System.out.println("Groups assigned to "+userName+" are: "+cursorResult.toString());
+				
+				
+				DBCollection table1 = db.getCollection("polls");
+				BasicDBObject whereQuery1;
+				JSONArray resultJson1=new JSONArray();
+				
+				
+				
+				BasicDBObject whereQueryn = new BasicDBObject();
+				whereQueryn.put("poll_participants",userName);
+				System.out.println("whereQueryn: "+whereQueryn);
+				DBCursor cursorn = table1.find(whereQueryn);
+				DBObject getdatan;
+				System.out.println(cursorn.count());
+				while(cursorn.hasNext()) {
+					getdatan=cursorn.next();
+					cursorResult1=new JSONObject();
+					
+					cursorResult1.put("poll_id",getdatan.get("_id"));
+					cursorResult1.put("poll_question",getdatan.get("poll_question"));
+					cursorResult1.put("poll_options",getdatan.get("poll_options"));
+					cursorResult1.put("poll_create_date",getdatan.get("poll_create_date"));
+					cursorResult1.put("poll_end_date",getdatan.get("poll_end_date"));
+					cursorResult1.put("poll_creator",getdatan.get("poll_creator"));
+					cursorResult1.put("poll_category",getdatan.get("poll_category"));
+					cursorResult1.put("poll_groupid",getdatan.get("poll_groupid"));
+					cursorResult1.put("poll_participants",getdatan.get("poll_participants"));
+					
+					System.out.println("cursorResult1 : "+cursorResult1);
+					
+					resultJson1.put(cursorResult1);
+				}
+				
+				
+				for(int i=0;i<cursorResult.length();i++){
+					whereQuery1 = new BasicDBObject();
+					System.out.println("cursorResult: "+cursorResult.get(i).toString());
+					whereQuery1.put("poll_groupid", cursorResult.get(i).toString());
+					System.out.println("whereQuery1: "+whereQuery1);
+					DBCursor cursor1 = table1.find(whereQuery1);
+					DBObject getdata1;
+					
+					while(cursor1.hasNext()) {
+						getdata1=cursor1.next();
+						cursorResult1=new JSONObject();
+						
+						cursorResult1.put("poll_id",getdata1.get("_id"));
+						cursorResult1.put("poll_question",getdata1.get("poll_question"));
+						cursorResult1.put("poll_options",getdata1.get("poll_options"));
+						cursorResult1.put("poll_create_date",getdata1.get("poll_create_date"));
+						cursorResult1.put("poll_end_date",getdata1.get("poll_end_date"));
+						cursorResult1.put("poll_creator",getdata1.get("poll_creator"));
+						cursorResult1.put("poll_category",getdata1.get("poll_category"));
+						cursorResult1.put("poll_groupid",getdata1.get("poll_groupid"));
+						cursorResult1.put("poll_participants",getdata1.get("poll_participants"));
+						
+						System.out.println("cursorResult1 : "+cursorResult1);
+						
+						resultJson1.put(cursorResult1);
+					}
+				}
+				
+				result.put("My_Polls", resultJson1);
+				result.put("Msg", "success");
+
+			}else{
+				System.out.println("can not connect");
+				result.put("Msg", "fail");
+			}
+
+		}catch (MongoException me) { 
+			result.put("Msg", "fail");
+			me.printStackTrace(); 
+		} catch(Exception e){
+			result.put("Msg", "fail");
+			e.printStackTrace();
+		}
+		System.out.println("show polls by group: "+result);
+		return result.toString();
+	}
+	
+	
+	
 	public String showPollsByCategory(String categoryName) throws Exception{
 		JSONObject result= new JSONObject();
 		JSONObject cursorResult;
@@ -420,6 +608,8 @@ public class PollsDAO implements IPollsDAO{
 		PollsDAO pd=new PollsDAO();
 //		pd.showAllPolls();
 //		pd.showMyPolls("4084553613");
-		pd.getPollOptionCount("53536c827d071683b7368835");
-	}
+//		pd.getPollOptionCount("53536c827d071683b7368835");
+//		pd.showPollsByGroup("(408) 429-4731");
+		pd.showAllPollsAssignedToMe("4084553112");
+		}
 }

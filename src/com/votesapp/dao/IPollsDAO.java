@@ -9,6 +9,10 @@ public interface IPollsDAO {
 	
 	public String showAllPolls() throws Exception;
 	
+	public String showPollsByGroup(String userName) throws Exception;
+	
+	public String showAllPollsAssignedToMe(String userName) throws Exception;
+	
 	public String showPollsByCategory(String categoryName) throws Exception;
 	
 	public String showMyPolls(String userName) throws Exception;

@@ -73,6 +73,16 @@ public class RestAPI {
 		return result;
 	}
 	
+	
+	@GET
+	@Path("poll/pollsAssigned/{user_name}")
+	public String showpollsAssigned(@PathParam ("user_name") String user_name) throws Exception{
+		IPollsDAO iPollsDAO=new PollsDAO();
+		String result=iPollsDAO.showAllPollsAssignedToMe(user_name);
+
+		return result;
+	}
+	
 	@POST
 	@Path("/poll/myVote")
 	public String voteOnPoll(String voteOnPollValues) throws Exception{
