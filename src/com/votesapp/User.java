@@ -20,6 +20,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
 @Path("user")
@@ -120,11 +121,11 @@ public class User {
 	        BasicDBObject dbGroup = new BasicDBObject();
 	        BasicDBObject dbWhere = new BasicDBObject();
 	        dbWhere.put("_id", new ObjectId(id));
-	        dbGroup.append("$set", new BasicDBObject().append("deleted", true));
-	        groupCollection.update(dbWhere, dbGroup);
-	        /*BasicDBObject dbGroup = new BasicDBObject();
-	        dbGroup.put("_id",new ObjectId(id));
-	        WriteResult wr = groupCollection.remove(dbGroup);*/
+	        //dbGroup.append("$set", new BasicDBObject().append("deleted", true));
+	        //groupCollection.update(dbWhere, dbGroup);
+	        //BasicDBObject dbGroup = new BasicDBObject();
+	        //dbGroup.put("_id",new ObjectId(id));
+	        groupCollection.remove(dbGroup);
 	        System.out.println("Data deleted");
 	    } catch (Exception e) { 
 	    	  e.printStackTrace(); 
