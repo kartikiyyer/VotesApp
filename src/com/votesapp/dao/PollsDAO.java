@@ -410,15 +410,15 @@ public class PollsDAO implements IPollsDAO{
 				}
 				jobj.put("voted_id", resultJson);
 
-				List list = new ArrayList();
+				List<ObjectId> list = new ArrayList<ObjectId>();
 				for(int i=0;i<resultJson.length();i++){
-					list.add(resultJson.get(i));
+					list.add(new ObjectId(resultJson.get(i).toString()));
 				}
-
+				System.out.println("list: "+list);
 
 				table = db.getCollection("polls");
 				whereQuery = new BasicDBObject();
-				whereQuery.put("poll_id", new BasicDBObject("$nin", list));
+				whereQuery.put("_id", new BasicDBObject("$nin", list));
 				whereQuery.put("poll_category", categoryName);
 				DBCursor cursor1 = table.find(whereQuery);
 				DBObject getdata1;
@@ -671,10 +671,10 @@ public class PollsDAO implements IPollsDAO{
 	public static void main(String[] args) throws Exception{
 		PollsDAO pd=new PollsDAO();
 		//		pd.showAllPolls("4084553614");
-		//		pd.showPollsByCategory("Fun", "4084553614");
+				pd.showPollsByCategory("Fun", "4084553614");
 		//		pd.showMyPolls("4084553613");
 		//		pd.getPollOptionCount("53536c827d071683b7368835");
 //				pd.showPollsByGroup("(408) 429-4731");
-		pd.showAllPollsAssignedToMe("15555215553");
+//		pd.showAllPollsAssignedToMe("15555215553");
 	}
 }
