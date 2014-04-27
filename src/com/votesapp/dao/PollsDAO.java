@@ -358,6 +358,17 @@ public class PollsDAO implements IPollsDAO{
 					cursorResult1.put("poll_creator",getdata1.get("poll_creator"));
 					cursorResult1.put("poll_category",getdata1.get("poll_category"));
 					cursorResult1.put("poll_groupid",getdata1.get("poll_groupid"));
+					
+					//get group name
+					table = db.getCollection("group");
+					DBObject searchById = new BasicDBObject("_id", new ObjectId(getdata1.get("poll_groupid").toString()));
+					DBCursor cursorx = table.find(searchById);
+					DBObject getdatax;
+					while(cursorx.hasNext()) {
+						getdatax=cursorx.next();
+						cursorResult1.put("poll_groupname",getdatax.get("name"));
+					}
+					
 					cursorResult1.put("poll_participants",getdata1.get("poll_participants"));
 
 					System.out.println("cursorResult1 : "+cursorResult1);
@@ -609,6 +620,73 @@ public class PollsDAO implements IPollsDAO{
 		return cursorResult.toString();
 	}
 
+	
+	public String showPollByPollId(String pollId) throws Exception{
+		JSONObject result= new JSONObject();
+		JSONObject cursorResult;
+		System.out.println("in showPollByPollId...");
+		try{
+			MongoClient mongo = new MongoClient( ipaddress , 53838 );
+			DB db = mongo.getDB("votesapp");
+			boolean auth = db.authenticate("admin", "password@123".toCharArray());
+			if(auth){
+				System.out.println("connection successfull");
+				DBCollection table = db.getCollection("polls");
+
+				DBObject searchById = new BasicDBObject("_id", new ObjectId(pollId));
+				
+				DBCursor cursor = table.find(searchById);
+				System.out.println("searchById: "+searchById);
+				DBObject getdata;
+				JSONArray resultJson=new JSONArray();
+				while(cursor.hasNext()) {
+					getdata=cursor.next();
+					cursorResult=new JSONObject();
+
+					cursorResult.put("poll_id",getdata.get("_id"));
+					cursorResult.put("poll_question",getdata.get("poll_question"));
+					cursorResult.put("poll_options",getdata.get("poll_options"));
+					cursorResult.put("poll_create_date",getdata.get("poll_create_date"));
+					cursorResult.put("poll_end_date",getdata.get("poll_end_date"));
+					cursorResult.put("poll_creator",getdata.get("poll_creator"));
+					cursorResult.put("poll_category",getdata.get("poll_category"));
+					cursorResult.put("poll_groupid",getdata.get("poll_groupid"));
+					
+					//get group name
+					table = db.getCollection("group");
+					searchById = new BasicDBObject("_id", new ObjectId(getdata.get("poll_groupid").toString()));
+					DBCursor cursorx = table.find(searchById);
+					DBObject getdatax;
+					while(cursorx.hasNext()) {
+						getdatax=cursorx.next();
+						cursorResult.put("poll_groupname",getdatax.get("name"));
+					}
+					
+					
+					
+					cursorResult.put("poll_participants",getdata.get("poll_participants"));
+
+					resultJson.put(cursorResult);
+				}
+
+				result.put("This_Poll", resultJson);
+				result.put("Msg", "success");
+
+			}else{
+				System.out.println("can not connect");
+				result.put("Msg", "fail");
+			}
+
+		}catch (MongoException me) { 
+			result.put("Msg", "fail");
+			me.printStackTrace(); 
+		} catch(Exception e){
+			result.put("Msg", "fail");
+			e.printStackTrace();
+		}
+		System.out.println(result);
+		return result.toString();
+	}
 
 	/*public String showPollResult(String pollId) throws Exception{
 		JSONObject result= new JSONObject();
@@ -671,10 +749,11 @@ public class PollsDAO implements IPollsDAO{
 	public static void main(String[] args) throws Exception{
 		PollsDAO pd=new PollsDAO();
 		//		pd.showAllPolls("4084553614");
-				pd.showPollsByCategory("Fun", "4084553614");
+//				pd.showPollsByCategory("Fun", "4084553614");
+		pd.showPollByPollId("535367797d070813df1c1848");
 		//		pd.showMyPolls("4084553613");
 		//		pd.getPollOptionCount("53536c827d071683b7368835");
 //				pd.showPollsByGroup("(408) 429-4731");
-//		pd.showAllPollsAssignedToMe("15555215553");
+//		pd.showAllPollsAssignedToMe("4084553112");
 	}
 }

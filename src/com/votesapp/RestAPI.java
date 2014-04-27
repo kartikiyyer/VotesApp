@@ -54,6 +54,15 @@ public class RestAPI {
 
 		return result;
 	}
+	
+	@GET
+	@Path("poll/ById/{pollId}")
+	public String showPollById(@PathParam ("pollId") String pollId) throws Exception{
+		IPollsDAO iPollsDAO=new PollsDAO();
+		String result=iPollsDAO.showPollByPollId(pollId);
+
+		return result;
+	}
 
 	@GET
 	@Path("poll/ByCategory/{category_name}/{user_name}")

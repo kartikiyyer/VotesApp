@@ -20,6 +20,7 @@ public interface IPollsDAO {
 	public String voteOnPoll(JSONObject pollResults) throws Exception;
 	
 //	public String showPollResult(String pollResults) throws Exception;
+	public String showPollByPollId(String pollId) throws Exception;
 	
 	public String getPollOptionCount(String pollId) throws Exception;
 }
