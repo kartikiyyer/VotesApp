@@ -636,42 +636,34 @@ public class PollsDAO implements IPollsDAO{
 			if(auth){
 				System.out.println("connection successfull");
 				DBCollection table = db.getCollection("polls");
-
 				DBObject searchById = new BasicDBObject("_id", new ObjectId(pollId));
-				
-				DBCursor cursor = table.find(searchById);
+				DBObject getdata = table.findOne(searchById);
 				System.out.println("searchById: "+searchById);
-				DBObject getdata;
 				JSONArray resultJson=new JSONArray();
-				while(cursor.hasNext()) {
-					getdata=cursor.next();
-					cursorResult=new JSONObject();
+				cursorResult=new JSONObject();
 
-					cursorResult.put("poll_id",getdata.get("_id"));
-					cursorResult.put("poll_question",getdata.get("poll_question"));
-					cursorResult.put("poll_options",getdata.get("poll_options"));
-					cursorResult.put("poll_create_date",getdata.get("poll_create_date"));
-					cursorResult.put("poll_end_date",getdata.get("poll_end_date"));
-					cursorResult.put("poll_creator",getdata.get("poll_creator"));
-					cursorResult.put("poll_category",getdata.get("poll_category"));
-					cursorResult.put("poll_groupid",getdata.get("poll_groupid"));
-					
-					//get group name
-					table = db.getCollection("group");
-					searchById = new BasicDBObject("_id", new ObjectId(getdata.get("poll_groupid").toString()));
-					DBCursor cursorx = table.find(searchById);
-					DBObject getdatax;
-					while(cursorx.hasNext()) {
-						getdatax=cursorx.next();
-						cursorResult.put("poll_groupname",getdatax.get("name"));
-					}
-					
-					
-					
-					cursorResult.put("poll_participants",getdata.get("poll_participants"));
-
-					resultJson.put(cursorResult);
+				cursorResult.put("poll_id",getdata.get("_id"));
+				cursorResult.put("poll_question",getdata.get("poll_question"));
+				cursorResult.put("poll_options",getdata.get("poll_options"));
+				cursorResult.put("poll_create_date",getdata.get("poll_create_date"));
+				cursorResult.put("poll_end_date",getdata.get("poll_end_date"));
+				cursorResult.put("poll_creator",getdata.get("poll_creator"));
+				cursorResult.put("poll_category",getdata.get("poll_category"));
+				cursorResult.put("poll_groupid",getdata.get("poll_groupid"));
+				cursorResult.put("poll_participants",getdata.get("poll_participants"));
+				
+				//get group name
+				BasicDBList list1=(BasicDBList)getdata.get("poll_groupid");
+				List list = new ArrayList();
+				table = db.getCollection("group");
+				for(int i=0;i<list1.size();i++){
+					searchById = new BasicDBObject("_id", new ObjectId(list1.get(i).toString()));
+					DBObject getdatax=table.findOne(searchById);
+					list.add(getdatax.get("name"));
 				}
+				cursorResult.put("poll_groupname",list);
+
+				resultJson.put(cursorResult);
 
 				result.put("This_Poll", resultJson);
 				result.put("Msg", "success");
