@@ -3,6 +3,7 @@ package com.votesapp.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.BSONObject;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
@@ -298,7 +299,7 @@ public class PollsDAO implements IPollsDAO{
 					list.add(new ObjectId(resultJson.get(i).toString()));
 				}
 				System.out.println("list: "+list);
-				
+
 				DBCollection table1 = db.getCollection("polls");
 				BasicDBObject whereQuery1;
 				JSONArray resultJson1=new JSONArray();
@@ -336,21 +337,23 @@ public class PollsDAO implements IPollsDAO{
 				whereQuery.put("members", userName);
 				DBCursor cursor = table.find(whereQuery);
 				DBObject getdata;
-//				JSONArray cursorResult=new JSONArray();
-				List<ObjectId> cursorResult=new ArrayList<ObjectId>();
+
+				List cursorResult=new ArrayList();
 				while(cursor.hasNext()) {
 					getdata=cursor.next();
-					cursorResult.add(new ObjectId(getdata.get("_id").toString()));
+					System.out.println("getdata: "+getdata.get("_id"));
+					cursorResult.add((getdata.get("_id").toString()));
 				}
-				System.out.println("Groups assigned to "+userName+" are: "+cursorResult.toString());
+				System.out.println("Groups assigned to "+userName+" are: "+cursorResult);
 
 				whereQuery1 = new BasicDBObject();
-				whereQuery1.put("poll_groupid", new BasicDBObject("$in", cursorResult).toString());
+				whereQuery1.put("poll_groupid", new BasicDBObject("$in",cursorResult ));
 				System.out.println("whereQuery1: "+whereQuery1);
 				DBCursor cursor1 = table1.find(whereQuery1);
 				DBObject getdata1;
 
 				while(cursor1.hasNext()) {
+					System.out.println("inside");
 					getdata1=cursor1.next();
 					cursorResult1=new JSONObject();
 
@@ -362,18 +365,19 @@ public class PollsDAO implements IPollsDAO{
 					cursorResult1.put("poll_creator",getdata1.get("poll_creator"));
 					cursorResult1.put("poll_category",getdata1.get("poll_category"));
 					cursorResult1.put("poll_groupid",getdata1.get("poll_groupid"));
+					cursorResult1.put("poll_participants",getdata1.get("poll_participants"));
 					
 					//get group name
+					BasicDBList list1=(BasicDBList)getdata1.get("poll_groupid");
+					List listx = new ArrayList();
 					table = db.getCollection("group");
-					DBObject searchById = new BasicDBObject("_id", new ObjectId(getdata1.get("poll_groupid").toString()));
-					DBCursor cursorx = table.find(searchById);
-					DBObject getdatax;
-					while(cursorx.hasNext()) {
-						getdatax=cursorx.next();
-						cursorResult1.put("poll_groupname",getdatax.get("name"));
+					DBObject searchById;
+					for(int i=0;i<list1.size();i++){
+						searchById = new BasicDBObject("_id", new ObjectId(list1.get(i).toString()));
+						DBObject getdatax=table.findOne(searchById);
+						listx.add(getdatax.get("name"));
 					}
-					
-					cursorResult1.put("poll_participants",getdata1.get("poll_participants"));
+					cursorResult1.put("poll_groupname",listx);
 
 					System.out.println("cursorResult1 : "+cursorResult1);
 
@@ -435,6 +439,7 @@ public class PollsDAO implements IPollsDAO{
 				whereQuery = new BasicDBObject();
 				whereQuery.put("_id", new BasicDBObject("$nin", list));
 				whereQuery.put("poll_category", categoryName);
+				whereQuery.put("poll_creator", new BasicDBObject("$ne", user_name));
 				DBCursor cursor1 = table.find(whereQuery);
 				DBObject getdata1;
 				JSONArray resultJson1=new JSONArray();
@@ -624,7 +629,7 @@ public class PollsDAO implements IPollsDAO{
 		return cursorResult.toString();
 	}
 
-	
+
 	public String showPollByPollId(String pollId) throws Exception{
 		JSONObject result= new JSONObject();
 		JSONObject cursorResult;
@@ -744,12 +749,12 @@ public class PollsDAO implements IPollsDAO{
 
 	public static void main(String[] args) throws Exception{
 		PollsDAO pd=new PollsDAO();
-		//		pd.showAllPolls("4084553614");
-//				pd.showPollsByCategory("Fun", "4084553614");
-		pd.showPollByPollId("535367797d070813df1c1848");
+//				pd.showAllPolls("15555215554");
+//						pd.showPollsByCategory("Fun", "15555215554");
+//		pd.showPollByPollId("535da4ae657670144a155603");
 		//		pd.showMyPolls("4084553613");
-		//		pd.getPollOptionCount("53536c827d071683b7368835");
-//				pd.showPollsByGroup("(408) 429-4731");
-//		pd.showAllPollsAssignedToMe("4084553112");
+		//				pd.getPollOptionCount("535d8d98657644dd494e4f7c");
+		//				pd.showPollsByGroup("(408) 429-4731");
+				pd.showAllPollsAssignedToMe("15555215554");
 	}
 }
