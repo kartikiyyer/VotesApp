@@ -136,10 +136,12 @@ public class PollsDAO implements IPollsDAO{
 				DBCursor cursor1 = table.find(whereQuery);
 				DBObject getdata1;
 				System.out.println("were query: "+whereQuery);
+				JSONArray jarray=new JSONArray();
 				while(cursor1.hasNext()) {
 					getdata1=cursor1.next();
 					if(getdata1.get("poll_public").equals("yes")){
-						result.append("All_Polls", new JSONObject(JSON.serialize(getdata1)));
+						jarray.put(new JSONObject(JSON.serialize(getdata1)));
+//						result.append("All_Polls", new JSONObject(JSON.serialize(getdata1)));
 					}
 
 					/*					cursorResult=new JSONObject();
@@ -158,7 +160,7 @@ public class PollsDAO implements IPollsDAO{
 
 					resultJson.put(cursorResult);*/
 				}
-
+				result.put("All_Polls", jarray);
 				//to fetch particular element in mongo object which is an array
 				/*BasicDBObject whereQuery = new BasicDBObject();
 				whereQuery.put("poll_question", jsonCreatePollValues.get("poll_question"));
