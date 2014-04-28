@@ -131,6 +131,8 @@ public class PollsDAO implements IPollsDAO{
 				whereQuery = new BasicDBObject();
 
 				whereQuery.put("_id", new BasicDBObject("$nin", list));
+				whereQuery.put("poll_creator", new BasicDBObject("$ne", user_name));
+				
 				DBCursor cursor1 = table.find(whereQuery);
 				DBObject getdata1;
 				System.out.println("were query: "+whereQuery);
