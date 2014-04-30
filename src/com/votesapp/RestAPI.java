@@ -14,7 +14,7 @@ import com.votesapp.dao.*;
 
 @Path("votesapp")
 public class RestAPI {
-	
+
 
 	@GET
 	@Path("/check/{values}")
@@ -35,7 +35,7 @@ public class RestAPI {
 
 		return result;
 	}
-	
+
 	@DELETE
 	@Path("/poll")
 	public String deletePoll(String pollId) throws Exception{
@@ -45,25 +45,34 @@ public class RestAPI {
 
 		return result;
 	}
-	
+
 	@GET
-	@Path("poll/All")
-	public String showAllPolls() throws Exception{
+	@Path("poll/All/{user_name}")
+	public String showAllPolls(@PathParam ("user_name") String user_name) throws Exception{
 		IPollsDAO iPollsDAO=new PollsDAO();
-		String result=iPollsDAO.showAllPolls();
+		String result=iPollsDAO.showAllPolls(user_name);
 
 		return result;
 	}
 	
 	@GET
-	@Path("poll/ByCategory/{category_name}")
-	public String showPollsByCategory(@PathParam ("category_name") String category_name) throws Exception{
+	@Path("poll/ById/{pollId}")
+	public String showPollById(@PathParam ("pollId") String pollId) throws Exception{
 		IPollsDAO iPollsDAO=new PollsDAO();
-		String result=iPollsDAO.showPollsByCategory(category_name);
+		String result=iPollsDAO.showPollByPollId(pollId);
 
 		return result;
 	}
-	
+
+	@GET
+	@Path("poll/ByCategory/{category_name}/{user_name}")
+	public String showPollsByCategory(@PathParam ("category_name") String category_name,@PathParam ("user_name") String user_name) throws Exception{
+		IPollsDAO iPollsDAO=new PollsDAO();
+		String result=iPollsDAO.showPollsByCategory(category_name,user_name);
+
+		return result;
+	}
+
 	@GET
 	@Path("poll/myPolls/{user_name}")
 	public String showMyPolls(@PathParam ("user_name") String user_name) throws Exception{
@@ -72,7 +81,17 @@ public class RestAPI {
 
 		return result;
 	}
-	
+
+
+	@GET
+	@Path("poll/pollsAssigned/{user_name}")
+	public String showpollsAssigned(@PathParam ("user_name") String user_name) throws Exception{
+		IPollsDAO iPollsDAO=new PollsDAO();
+		String result=iPollsDAO.showAllPollsAssignedToMe(user_name);
+
+		return result;
+	}
+
 	@POST
 	@Path("/poll/myVote")
 	public String voteOnPoll(String voteOnPollValues) throws Exception{
@@ -83,7 +102,7 @@ public class RestAPI {
 
 		return result;
 	}
-	
+
 	@GET
 	@Path("poll/voteResult/{pollId}")
 	public String showVoteResults(@PathParam ("pollId") String pollId) throws Exception{
