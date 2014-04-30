@@ -113,7 +113,7 @@ public class RestAPI {
 	}
 	
 	@GET
-	@Path("poll/voteResult/{pollId}")
+	@Path("poll/voteResultGeo/{pollId}")
 	public String showVoteResultsGeo(@PathParam ("pollId") String pollId) throws Exception{
 		IPollsDAO iPollsDAO=new PollsDAO();
 		String result=iPollsDAO.getPollOptionCountGeo(pollId);
