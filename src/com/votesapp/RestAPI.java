@@ -111,5 +111,14 @@ public class RestAPI {
 
 		return result;
 	}
+	
+	@GET
+	@Path("poll/voteResult/{pollId}")
+	public String showVoteResultsGeo(@PathParam ("pollId") String pollId) throws Exception{
+		IPollsDAO iPollsDAO=new PollsDAO();
+		String result=iPollsDAO.getPollOptionCountGeo(pollId);
+
+		return result;
+	}
 
 }

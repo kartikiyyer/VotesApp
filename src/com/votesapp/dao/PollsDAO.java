@@ -1,6 +1,5 @@
 package com.votesapp.dao;
 
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +20,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
+import com.votesapp.utility.GeocodeImplementation;
 
 public class PollsDAO implements IPollsDAO{
 	private String ipaddress="ds053838.mongolab.com";
@@ -317,10 +317,10 @@ public class PollsDAO implements IPollsDAO{
 						DBCollection table1 = db.getCollection("polls");
 						BasicDBObject whereQuery1;
 						JSONArray resultJson1=new JSONArray();
-						
+
 						DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 						Calendar cal = Calendar.getInstance();
-						
+
 						for(int i=0;i<cursorResult.length();i++){
 							whereQuery1 = new BasicDBObject();
 							System.out.println("cursorResult: "+cursorResult.get(i).toString());
@@ -428,7 +428,7 @@ public class PollsDAO implements IPollsDAO{
 						DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 						Calendar cal = Calendar.getInstance();
 						whereQueryn.put("poll_end_date", new BasicDBObject("$gte",dateFormat.format(cal.getTime())));
-						
+
 						System.out.println("whereQueryn: "+whereQueryn);
 						DBCursor cursorn = table1.find(whereQueryn);
 						DBObject getdatan;
@@ -727,25 +727,49 @@ public class PollsDAO implements IPollsDAO{
 
 				String flag="success";
 				JSONArray partici = (JSONArray) pollResults.get("poll_options");
-//				JSONArray resp=new JSONArray();
+				//				JSONArray resp=new JSONArray();
 				for(int i=0;i<partici.length();i++){
 					if(null==partici.get(i) || partici.get(i).toString().isEmpty()){
 						result.put("Msg", "fail");
 						flag="fail";
 						break;
 					}
-//					resp.put(partici.get(i).toString().replaceAll("[^0-9]", "").trim());
-//					System.out.println("resp:  "+resp);
+					//					resp.put(partici.get(i).toString().replaceAll("[^0-9]", "").trim());
+					//					System.out.println("resp:  "+resp);
 				}
 				if(flag=="success"){
 
-//					pollResults.put("poll_options", pollResults.get("poll_options"));
+					//					pollResults.put("poll_options", pollResults.get("poll_options"));
 					pollResults.put(("poll_id"),pollResults.getString("poll_id").replaceAll("[\\p{P}\\p{S} ]", "").trim());
 					pollResults.put(("poll_question"),pollResults.getString("poll_question").replaceAll("[\\t]", "").trim());
 					pollResults.put(("poll_voter_option"),pollResults.getString("poll_voter_option").replaceAll("[^0-9]", "").trim());
 					pollResults.put(("poll_voter_id"),pollResults.getString("poll_voter_id").replaceAll("[^0-9]", "").trim());
 					pollResults.put(("poll_creator"),pollResults.getString("poll_creator").replaceAll("[^0-9]", "").trim());		
 					pollResults.put(("poll_category"),pollResults.getString("poll_category").replaceAll("[\\p{P}\\p{S} ]", "").trim());
+
+					String latlng,lat,lng;
+//					boolean notnullchk=false;
+					JSONObject jsonObjectGeo=new JSONObject(pollResults.getString("poll_voter_location"));
+					lat=jsonObjectGeo.getString("latitude");
+					lng=jsonObjectGeo.getString("longitude");
+					String geoResultSet=null;
+					if(null!=lat && null!=lng){
+						if(!lat.isEmpty() && !lng.isEmpty()){
+							latlng=lat+","+lng;
+							GeocodeImplementation geocodeImplementation=new GeocodeImplementation();
+							geoResultSet=geocodeImplementation.getJSONByGoogle(latlng);
+							if(null!=geoResultSet){
+								pollResults.put("poll_voter_city", geoResultSet);
+//								notnullchk=true;
+							}else{
+								pollResults.put("poll_voter_city", "unknown");
+							}
+						}else{
+							pollResults.put("poll_voter_city", "unknown");
+						}
+					}else{
+						pollResults.put("poll_voter_city", "unknown");
+					}
 
 
 					try { 
@@ -826,17 +850,16 @@ public class PollsDAO implements IPollsDAO{
 							System.out.println("cursor count is ZERO!!");
 							cursorResult.put("Msg", "fail");
 						}else{
-							
+
 							DBObject getdata;
 							int noOfPollOptions=0;
-								System.out.println("cursor has next!!");
-								getdata=cursor.curr();
-								BasicDBList bdl=(BasicDBList)getdata.get("poll_options");
-								System.out.println(bdl.size());
-								noOfPollOptions=bdl.size();
-								cursorResult.put("poll_question", getdata.get("poll_question"));
-								cursorResult.put("poll_options",getdata.get("poll_options"));
-//							}
+							System.out.println("cursor has next!!");
+							getdata=cursor.curr();
+							BasicDBList bdl=(BasicDBList)getdata.get("poll_options");
+							System.out.println(bdl.size());
+							noOfPollOptions=bdl.size();
+							cursorResult.put("poll_question", getdata.get("poll_question"));
+							cursorResult.put("poll_options",getdata.get("poll_options"));
 
 							whereQuery = new BasicDBObject();
 							whereQuery.put("poll_id", pollId);
@@ -873,6 +896,83 @@ public class PollsDAO implements IPollsDAO{
 		return cursorResult.toString();
 	}
 
+	//geolocation wise count start
+	public String getPollOptionCountGeo(String pollId) throws Exception{
+		JSONObject result= new JSONObject();
+		JSONObject cursorResult=new JSONObject();
+		System.out.println("in getPollOptionCountGeo...");
+
+		try{
+			//removing extra chars from the  input --> validation
+			if(null==pollId || pollId.isEmpty()){
+				cursorResult.put("Msg", "fail");
+			}else{
+				pollId=pollId.replaceAll("[\\p{P}\\p{S} ]", "").trim();
+
+				try{
+					MongoClient mongo = new MongoClient( ipaddress , 53838 );
+					DB db = mongo.getDB("votesapp");
+					boolean auth = db.authenticate("admin", "password@123".toCharArray());
+					if(auth){
+						System.out.println("connection successfull");
+						DBCollection table = db.getCollection("poll_results");
+
+						BasicDBObject whereQuery = new BasicDBObject();
+						whereQuery.put("poll_id", pollId);
+						DBCursor cursor = table.find(whereQuery);
+
+						System.out.println("whereQuery: "+whereQuery);
+						if(cursor.size()==0)
+						{
+							System.out.println("cursor count is ZERO!!");
+							cursorResult.put("Msg", "no_votes");
+						}else{
+							DBObject getdata;
+							System.out.println("cursor has next!!");
+							getdata=cursor.next();
+							int val=cursor.size();
+							System.out.println(val);
+							cursorResult.put("poll_question", getdata.get("poll_question"));
+							cursorResult.put("poll_options",getdata.get("poll_options"));
+							while(cursor.hasNext()){
+								System.out.println("in while");
+//								getdata=cursor.next();
+								whereQuery = new BasicDBObject();
+								whereQuery.put("poll_id", pollId);
+								if(!result.toString().contains(getdata.get("poll_voter_city").toString())){
+									whereQuery.put("poll_voter_city", getdata.get("poll_voter_city"));
+									result.put(getdata.get("poll_voter_city").toString(), Long.toString(table.getCount(whereQuery)));
+								}
+								getdata=cursor.next();
+							}
+							cursorResult.put("city_count", result);
+							cursorResult.put("Msg", "success");
+						}
+					}else{
+						System.out.println("can not connect");
+						cursorResult.put("Msg", "fail");
+					}
+
+				}catch (MongoException me) { 
+					cursorResult.put("Msg", "fail");
+					me.printStackTrace(); 
+				} catch(Exception e){
+					cursorResult.put("Msg", "fail");
+					e.printStackTrace();
+				}
+			}
+		}catch (JSONException je) { 
+			cursorResult.put("Msg", "fail");
+			je.printStackTrace(); 
+		} catch(Exception e){
+			cursorResult.put("Msg", "fail");
+			e.printStackTrace();
+		}
+		System.out.println(cursorResult);
+		return cursorResult.toString();
+	}
+
+	//geolocation wise count end
 
 	public String showPollByPollId(String pollId) throws Exception{
 		JSONObject result= new JSONObject();
@@ -1009,12 +1109,12 @@ public class PollsDAO implements IPollsDAO{
 
 	public static void main(String[] args) throws Exception{
 		PollsDAO pd=new PollsDAO();
-//		pd.showAllPolls("15555215552");
-//		pd.showPollsByCategory("Fun","15555215552");
-//		pd.showPollByPollId("5360a7cbb7abb2c1871209f9");
-//		pd.showMyPolls("15555215552");
-//		pd.getPollOptionCount("5360a7cbb7abb2c1871209f9");
-//		pd.showPollsByGroup("(408) 429-4731");
-		pd.showAllPollsAssignedToMe("(408) 429-4731");
+		//		pd.showAllPolls("15555215552");
+		//		pd.showPollsByCategory("Fun","15555215552");
+		//		pd.showPollByPollId("5360a7cbb7abb2c1871209f9");
+		//		pd.showMyPolls("15555215552");
+		pd.getPollOptionCountGeo("5360ad8fe4b0783c3e4da5d5");
+		//		pd.showPollsByGroup("(408) 429-4731");
+		//		pd.showAllPollsAssignedToMe("(408) 429-4731");
 	}
 }

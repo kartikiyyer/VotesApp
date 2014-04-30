@@ -23,4 +23,6 @@ public interface IPollsDAO {
 	public String showPollByPollId(String pollId) throws Exception;
 	
 	public String getPollOptionCount(String pollId) throws Exception;
+	
+	public String getPollOptionCountGeo(String pollId) throws Exception;
 }
