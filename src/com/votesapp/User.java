@@ -115,17 +115,17 @@ public class User {
 		System.out.println("-----------Inside deleteGroup()----------");
 		//JSONObject jgroup = new JSONObject(group);
 		//System.out.println("Group: " + jgroup);
+		System.out.println("kartk" + id);
 		try { 		
 		    System.out.println("Deleting data");
 	        DBCollection groupCollection = db.getCollection("group");
-	        BasicDBObject dbGroup = new BasicDBObject();
 	        BasicDBObject dbWhere = new BasicDBObject();
 	        dbWhere.put("_id", new ObjectId(id));
 	        //dbGroup.append("$set", new BasicDBObject().append("deleted", true));
 	        //groupCollection.update(dbWhere, dbGroup);
 	        //BasicDBObject dbGroup = new BasicDBObject();
 	        //dbGroup.put("_id",new ObjectId(id));
-	        groupCollection.remove(dbGroup);
+	        groupCollection.remove(dbWhere);
 	        System.out.println("Data deleted");
 	    } catch (Exception e) { 
 	    	  e.printStackTrace(); 
