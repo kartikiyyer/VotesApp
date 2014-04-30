@@ -115,7 +115,7 @@ public class User {
 		System.out.println("-----------Inside deleteGroup()----------");
 		//JSONObject jgroup = new JSONObject(group);
 		//System.out.println("Group: " + jgroup);
-		System.out.println("kartk" + id);
+		System.out.println("Id to delete: " + id);
 		try { 		
 		    System.out.println("Deleting data");
 	        DBCollection groupCollection = db.getCollection("group");
