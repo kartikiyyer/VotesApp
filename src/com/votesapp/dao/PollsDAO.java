@@ -72,19 +72,9 @@ public class PollsDAO implements IPollsDAO{
 							BasicDBObject document = new BasicDBObject();
 							document.putAll((DBObject)JSON.parse(jsonCreatePollValues.toString()));
 							table.insert(document);
-
-							//use this to search by _id 
-							/*BasicDBObject whereQuery = new BasicDBObject();
-				whereQuery.put("_id", new ObjectId("put your id here"));*/
-
-							/*BasicDBObject whereQuery = new BasicDBObject();
-				whereQuery.put("poll_creator", "4084553112");
-				DBCursor cursor = table.find();
-				while(cursor.hasNext()) {
-					DBObject getdata=cursor.next();
-					System.out.println("poll created and poll id is: "+getdata.get("_id"));				
-				}*/
-
+							ObjectId id = (ObjectId)document.get( "_id" );
+							System.out.println("created poll id: "+id);
+							result.put("PollId", id);
 							result.put("Msg", "success");
 						}else{
 							System.out.println("can not connect");
@@ -843,7 +833,7 @@ public class PollsDAO implements IPollsDAO{
 						BasicDBObject whereQuery = new BasicDBObject();
 						whereQuery.put("poll_id", pollId);
 						DBCursor cursor = table.find(whereQuery);
-						System.out.println("cursor.itcount(): "+cursor.itcount());
+//						System.out.println("cursor.itcount(): "+cursor.itcount());
 						System.out.println("whereQuery: "+whereQuery);
 						if(cursor.size()==0)
 						{
@@ -854,7 +844,8 @@ public class PollsDAO implements IPollsDAO{
 							DBObject getdata;
 							int noOfPollOptions=0;
 							System.out.println("cursor has next!!");
-							getdata=cursor.curr();
+//							getdata=cursor.curr();
+							getdata=cursor.next();
 							BasicDBList bdl=(BasicDBList)getdata.get("poll_options");
 							System.out.println(bdl.size());
 							noOfPollOptions=bdl.size();
@@ -1008,16 +999,23 @@ public class PollsDAO implements IPollsDAO{
 						cursorResult.put("poll_category",getdata.get("poll_category"));
 						cursorResult.put("poll_groupid",getdata.get("poll_groupid"));
 						cursorResult.put("poll_participants",getdata.get("poll_participants"));
+						cursorResult.put("poll_media_type",getdata.get("poll_media_type"));
+						cursorResult.put("poll_media_link",getdata.get("poll_media_link"));
 
 						//get group name
-						BasicDBList list1=(BasicDBList)getdata.get("poll_groupid");
+						
 						List list = new ArrayList();
 						table = db.getCollection("group");
-						for(int i=0;i<list1.size();i++){
-							searchById = new BasicDBObject("_id", new ObjectId(list1.get(i).toString()));
-							DBObject getdatax=table.findOne(searchById);
-							list.add(getdatax.get("name"));
+						if(null!=getdata.get("poll_groupid") || !getdata.get("poll_groupid").toString().isEmpty()){
+							BasicDBList list1=(BasicDBList)getdata.get("poll_groupid");
+							for(int i=0;i<list1.size();i++){
+								System.out.println("if grp id present!!");
+								searchById = new BasicDBObject("_id", new ObjectId(list1.get(i).toString()));
+								DBObject getdatax=table.findOne(searchById);
+								list.add(getdatax.get("name"));
+							}
 						}
+						
 						cursorResult.put("poll_groupname",list);
 
 						resultJson.put(cursorResult);
@@ -1111,9 +1109,9 @@ public class PollsDAO implements IPollsDAO{
 		PollsDAO pd=new PollsDAO();
 		//		pd.showAllPolls("15555215552");
 		//		pd.showPollsByCategory("Fun","15555215552");
-		//		pd.showPollByPollId("5360a7cbb7abb2c1871209f9");
+				pd.showPollByPollId("53657c93b7ab0284ff802b9e");
 		//		pd.showMyPolls("15555215552");
-		pd.getPollOptionCountGeo("5360ad8fe4b0783c3e4da5d5");
+//		pd.getPollOptionCount("5360ad8fe4b0783c3e4da5d5");
 		//		pd.showPollsByGroup("(408) 429-4731");
 		//		pd.showAllPollsAssignedToMe("(408) 429-4731");
 	}

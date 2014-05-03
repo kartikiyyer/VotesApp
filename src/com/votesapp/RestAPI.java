@@ -1,16 +1,24 @@
 package com.votesapp;
 
+import java.io.File;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
 import com.votesapp.dao.*;
+import com.votesapp.utility.AWSS3BucketHandling;
 
 @Path("votesapp")
 public class RestAPI {
@@ -36,6 +44,24 @@ public class RestAPI {
 		return result;
 	}
 
+	@POST
+	@Path("/poll/media")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public String addMediaToPoll(
+			@FormDataParam("file") File fileobject,
+			@FormDataParam("file") FormDataContentDisposition contentDispositionHeader,
+			@QueryParam("pollid") String pollid) throws Exception{
+		
+		System.out.println("inside addMediaToPoll....");
+		System.out.println("pollid: "+pollid);
+		System.out.println("filename: "+contentDispositionHeader.getFileName());
+
+		AWSS3BucketHandling awss3BucketHandling=new AWSS3BucketHandling();
+		String result=awss3BucketHandling.addS3BucketObjects(fileobject, contentDispositionHeader, pollid);
+
+		return result;
+	}
+
 	@DELETE
 	@Path("/poll")
 	public String deletePoll(String pollId) throws Exception{
@@ -54,7 +80,7 @@ public class RestAPI {
 
 		return result;
 	}
-	
+
 	@GET
 	@Path("poll/ById/{pollId}")
 	public String showPollById(@PathParam ("pollId") String pollId) throws Exception{
@@ -111,7 +137,7 @@ public class RestAPI {
 
 		return result;
 	}
-	
+
 	@GET
 	@Path("poll/voteResultGeo/{pollId}")
 	public String showVoteResultsGeo(@PathParam ("pollId") String pollId) throws Exception{
