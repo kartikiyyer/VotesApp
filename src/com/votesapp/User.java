@@ -50,7 +50,7 @@ public class User {
 		if(null==phoneNumber || phoneNumber.isEmpty()){
 			jgroups.put("Msg", "fail");
 		}else{
-			phoneNumber=phoneNumber.replaceAll("[^0-9]", "").trim();
+//			phoneNumber=phoneNumber.replaceAll("[^0-9]", "").trim();
 
 			JSONObject jphoneNumber = new JSONObject(phoneNumber);
 
@@ -192,7 +192,7 @@ public class User {
 			result.put("Msg","fail");
 		}else{
 
-			id=id.replaceAll("[^0-9]", "").trim();
+//			id=id.replaceAll("[^0-9]", "").trim();
 			System.out.println("Id to delete: " + id);
 			try { 		
 				System.out.println("Deleting data");
@@ -225,7 +225,7 @@ public class User {
 		if(null==id || id.isEmpty()){
 			result.put("Msg","fail");
 		}else{
-			id=id.replaceAll("[^0-9]", "").trim();
+//			id=id.replaceAll("[^0-9]", "").trim();
 			String group = null;
 			try { 		
 				System.out.println("Fetching data");

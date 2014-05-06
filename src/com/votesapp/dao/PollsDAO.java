@@ -57,7 +57,8 @@ public class PollsDAO implements IPollsDAO{
 
 				if(flag=="success"){
 					jsonCreatePollValues.put("poll_participants", resp);
-					jsonCreatePollValues.put(("poll_groupid"),jsonCreatePollValues.getString("poll_groupid").replaceAll("[\\p{P}\\p{S} ]", "").trim());
+//					jsonCreatePollValues.put(("poll_groupid"),jsonCreatePollValues.getString("poll_groupid").replaceAll("[\\p{P}\\p{S} ]", "").trim());
+					jsonCreatePollValues.put(("poll_groupid"),jsonCreatePollValues.get("poll_groupid"));
 					jsonCreatePollValues.put(("poll_question"),jsonCreatePollValues.getString("poll_question").replaceAll("[\\t]", "").trim());
 					jsonCreatePollValues.put(("poll_creator"),jsonCreatePollValues.getString("poll_creator").replaceAll("[^0-9]", "").trim());		
 					jsonCreatePollValues.put(("poll_category"),jsonCreatePollValues.getString("poll_category").replaceAll("[\\p{P}\\p{S} ]", "").trim());
@@ -732,7 +733,7 @@ public class PollsDAO implements IPollsDAO{
 					//					pollResults.put("poll_options", pollResults.get("poll_options"));
 					pollResults.put(("poll_id"),pollResults.getString("poll_id").replaceAll("[\\p{P}\\p{S} ]", "").trim());
 					pollResults.put(("poll_question"),pollResults.getString("poll_question").replaceAll("[\\t]", "").trim());
-					pollResults.put(("poll_voter_option"),pollResults.getString("poll_voter_option").replaceAll("[^0-9]", "").trim());
+//					pollResults.put(("poll_voter_option"),pollResults.getString("poll_voter_option").replaceAll("[^0-9]", "").trim());
 					pollResults.put(("poll_voter_id"),pollResults.getString("poll_voter_id").replaceAll("[^0-9]", "").trim());
 					pollResults.put(("poll_creator"),pollResults.getString("poll_creator").replaceAll("[^0-9]", "").trim());		
 					pollResults.put(("poll_category"),pollResults.getString("poll_category").replaceAll("[\\p{P}\\p{S} ]", "").trim());
@@ -818,6 +819,7 @@ public class PollsDAO implements IPollsDAO{
 		try{
 			//removing extra chars from the  input --> validation
 			if(null==pollId || pollId.isEmpty()){
+				System.out.println("is empty");
 				cursorResult.put("Msg", "fail");
 			}else{
 				pollId=pollId.replaceAll("[\\p{P}\\p{S} ]", "").trim();
@@ -838,7 +840,7 @@ public class PollsDAO implements IPollsDAO{
 						if(cursor.size()==0)
 						{
 							System.out.println("cursor count is ZERO!!");
-							cursorResult.put("Msg", "fail");
+							cursorResult.put("Msg", "no_votes");
 						}else{
 
 							DBObject getdata;
@@ -856,6 +858,8 @@ public class PollsDAO implements IPollsDAO{
 							whereQuery.put("poll_id", pollId);
 							for(int tempval=1;tempval<=noOfPollOptions;tempval++){
 								whereQuery.put("poll_voter_option", tempval);
+								System.out.println();
+								System.out.println("tempval: "+tempval);
 								result.put(Integer.toString(tempval), table.getCount(whereQuery)); 
 							}
 
@@ -918,24 +922,26 @@ public class PollsDAO implements IPollsDAO{
 							System.out.println("cursor count is ZERO!!");
 							cursorResult.put("Msg", "no_votes");
 						}else{
-							DBObject getdata;
+							DBObject getdata=null;
 							System.out.println("cursor has next!!");
-							getdata=cursor.next();
-							int val=cursor.size();
-							System.out.println(val);
-							cursorResult.put("poll_question", getdata.get("poll_question"));
-							cursorResult.put("poll_options",getdata.get("poll_options"));
+//							getdata=cursor.next();
+							/*int val=cursor.size();
+							System.out.println(val);*/
+							
 							while(cursor.hasNext()){
 								System.out.println("in while");
-//								getdata=cursor.next();
+								getdata=cursor.next();
+								System.out.println("getdata: "+getdata);
 								whereQuery = new BasicDBObject();
 								whereQuery.put("poll_id", pollId);
 								if(!result.toString().contains(getdata.get("poll_voter_city").toString())){
 									whereQuery.put("poll_voter_city", getdata.get("poll_voter_city"));
 									result.put(getdata.get("poll_voter_city").toString(), Long.toString(table.getCount(whereQuery)));
 								}
-								getdata=cursor.next();
+//								getdata=cursor.next();
 							}
+							cursorResult.put("poll_question", getdata.get("poll_question"));
+							cursorResult.put("poll_options",getdata.get("poll_options"));
 							cursorResult.put("city_count", result);
 							cursorResult.put("Msg", "success");
 						}
@@ -1109,9 +1115,9 @@ public class PollsDAO implements IPollsDAO{
 		PollsDAO pd=new PollsDAO();
 		//		pd.showAllPolls("15555215552");
 		//		pd.showPollsByCategory("Fun","15555215552");
-				pd.showPollByPollId("53657c93b7ab0284ff802b9e");
+//				pd.showPollByPollId("53657c93b7ab0284ff802b9e");
 		//		pd.showMyPolls("15555215552");
-//		pd.getPollOptionCount("5360ad8fe4b0783c3e4da5d5");
+		pd.getPollOptionCount("5366c926e4b0352243013a07");
 		//		pd.showPollsByGroup("(408) 429-4731");
 		//		pd.showAllPollsAssignedToMe("(408) 429-4731");
 	}
