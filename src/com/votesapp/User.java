@@ -68,13 +68,13 @@ public class User {
 					System.out.println(dbRow);
 					jgroups.append("groups", new JSONObject(JSON.serialize(dbRow)));
 				}
-				jgroups.put("Msg", "success");
-				System.out.println(jgroups);
+				jgroups.put("Msg", "success");				
 			} catch (Exception e) { 
 				jgroups.put("Msg", "fail");
 				e.printStackTrace(); 
 			}
 		}
+		System.out.println(jgroups);
 		System.out.println("---------------Exiting showGroups()---------------");
 		return jgroups.toString();
 	}
@@ -126,6 +126,7 @@ public class User {
 				}
 			}
 		}
+		System.out.println(result);
 		System.out.println("-----------Exiting createGroup()-------------");
 
 		return result.toString();
@@ -176,6 +177,7 @@ public class User {
 				}
 			}
 		}
+		System.out.println(result);
 		System.out.println("-----------Exiting editGroup()-------------");
 		return result.toString();
 	}
@@ -211,6 +213,7 @@ public class User {
 				e.printStackTrace(); 
 			}
 		}
+		System.out.println(result);
 		System.out.println("-----------Exiting deleteGroup()-------------");
 		return result.toString();
 	}
@@ -249,6 +252,7 @@ public class User {
 				e.printStackTrace(); 
 			}
 		}
+		System.out.println(result);
 		System.out.println("---------------Exiting showGroup()----------------");
 		return result.toString();
 	}	
