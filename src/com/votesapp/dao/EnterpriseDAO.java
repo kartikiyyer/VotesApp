@@ -50,6 +50,60 @@ public class EnterpriseDAO implements IEnterpriseDAO {
 		return result.toString();
 	}
 
+	public String showEnterpriseFollowList(String userName) throws Exception{
+
+		JSONObject result= new JSONObject();
+		System.out.println("in showEnterpriseFollowList...");
+
+		try{
+			//removing extra chars from the  input --> validation
+			if(null==userName || userName.isEmpty()){
+				result.put("Msg", "fail");
+			}
+			else{
+				userName=userName.replaceAll("[^0-9]", "").trim();
+
+				try{
+					MongoClient mongo = new MongoClient( ipaddress , 53838 );
+					DB db = mongo.getDB("votesapp");
+					boolean auth = db.authenticate("admin", "password@123".toCharArray());
+					if(auth){
+						System.out.println("connection successfull");
+						DBCollection table = db.getCollection("enterprise_follower");
+
+						BasicDBObject whereQuery = new BasicDBObject();
+						whereQuery.put("follower", userName);
+
+						System.out.println("whereQuery:: "+whereQuery);
+						DBCursor cursor = table.find(whereQuery);
+						DBObject getdata;
+
+						JSONArray resultJson=new JSONArray();
+						while(cursor.hasNext()){
+							getdata=cursor.next();
+							resultJson.put(new JSONObject(JSON.serialize(getdata)));
+						}
+
+						result.put("following_list", resultJson);
+						result.put("Msg", "success");
+
+					}else{
+						System.out.println("can not connect");
+						result.put("Msg", "fail");
+					}
+
+				}catch (MongoException me) { 
+					result.put("Msg", "fail");
+					me.printStackTrace(); 
+				}
+			}
+		}catch(Exception e){
+
+		}
+		System.out.println("result:  "+result);
+		return result.toString();
+	
+	}
 
 	public String showEnterpriseList(String userName,String category) throws Exception{
 		JSONObject result= new JSONObject();
@@ -571,8 +625,9 @@ public class EnterpriseDAO implements IEnterpriseDAO {
 	
 
 	public static void main(String[] args) throws Exception{
-//		EnterpriseDAO edao=new EnterpriseDAO();
+		EnterpriseDAO edao=new EnterpriseDAO();
 //		edao.showEnterpriseList("4084553112","education");
+		edao.showEnterpriseFollowList("4084555566");
 //		edao.showEnterpriseVotedPolls("4084553112","SJSU");
 //		edao.showEnterpriseUnvotedPolls("4084553112","SJSU");
 //		edao.showEnterprisePollByPollId("536dd2b9e4b0e36cd2b8e6d1");

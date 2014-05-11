@@ -9,8 +9,6 @@ import org.codehaus.jettison.json.JSONObject;
 
 import com.votesapp.dao.EnterpriseDAO;
 import com.votesapp.dao.IEnterpriseDAO;
-import com.votesapp.dao.IPollsDAO;
-import com.votesapp.dao.PollsDAO;
 
 @Path("EnterpriseVotesapp")
 public class EnterpriseAPI {
@@ -24,6 +22,15 @@ public class EnterpriseAPI {
 		IEnterpriseDAO iEnterpriseDAO=new EnterpriseDAO();
 		String result=iEnterpriseDAO.followEnterprise(jsonFollowValues);
 		
+		return result;
+	}
+	
+	@GET
+	@Path("my_follow_list/{user_name}")
+	public String showEnterpriseFollowList(@PathParam ("user_name") String user_name) throws Exception{
+		IEnterpriseDAO iEnterpriseDAO=new EnterpriseDAO();
+		String result=iEnterpriseDAO.showEnterpriseFollowList(user_name);
+
 		return result;
 	}
 	
