@@ -51,7 +51,6 @@ public class EnterpriseDAO implements IEnterpriseDAO {
 	}
 
 	public String showEnterpriseFollowList(String userName) throws Exception{
-
 		JSONObject result= new JSONObject();
 		System.out.println("in showEnterpriseFollowList...");
 
@@ -81,10 +80,29 @@ public class EnterpriseDAO implements IEnterpriseDAO {
 						JSONArray resultJson=new JSONArray();
 						while(cursor.hasNext()){
 							getdata=cursor.next();
-							resultJson.put(new JSONObject(JSON.serialize(getdata)));
+							resultJson.put(getdata.get("enterprise_name"));
 						}
 
-						result.put("following_list", resultJson);
+						List list = new ArrayList();
+						for(int i=0;i<resultJson.length();i++){
+							list.add(resultJson.get(i));
+						}
+						System.out.println("list: "+list);
+
+						table = db.getCollection("enterprise_details");
+						whereQuery = new BasicDBObject();
+						whereQuery.put("enterprise_name", new BasicDBObject("$in", list));
+						System.out.println("where query: "+whereQuery);
+
+						DBCursor cursor1 = table.find(whereQuery);
+						DBObject getdata1;
+						JSONArray jarray=new JSONArray();
+						while(cursor1.hasNext()) {
+							getdata1=cursor1.next();
+							jarray.put(new JSONObject(JSON.serialize(getdata1)));
+						}
+						result.put("following_list", jarray);
+
 						result.put("Msg", "success");
 
 					}else{
@@ -102,7 +120,6 @@ public class EnterpriseDAO implements IEnterpriseDAO {
 		}
 		System.out.println("result:  "+result);
 		return result.toString();
-	
 	}
 
 	public String showEnterpriseList(String userName,String category) throws Exception{
@@ -627,7 +644,7 @@ public class EnterpriseDAO implements IEnterpriseDAO {
 	public static void main(String[] args) throws Exception{
 		EnterpriseDAO edao=new EnterpriseDAO();
 //		edao.showEnterpriseList("4084553112","education");
-		edao.showEnterpriseFollowList("4084555566");
+//		edao.showEnterpriseFollowList("4084555566");
 //		edao.showEnterpriseVotedPolls("4084553112","SJSU");
 //		edao.showEnterpriseUnvotedPolls("4084553112","SJSU");
 //		edao.showEnterprisePollByPollId("536dd2b9e4b0e36cd2b8e6d1");
