@@ -93,7 +93,7 @@ public class NotificationUtility {
 				List<String> regIds=getGcmRegIdList(list);
 				System.out.println("b4 assembleMessage...");
 				try {
-				    URL myURL = new URL("http://localhost:8080/VotesApp/sendAll?");
+				    URL myURL = new URL("http://votesapp.elasticbeanstalk.com/sendAll?");
 				    HttpURLConnection myURLConnection = (HttpURLConnection)myURL.openConnection();
 				    myURLConnection.setRequestMethod("POST");
 				   // myURLConnection.connect();

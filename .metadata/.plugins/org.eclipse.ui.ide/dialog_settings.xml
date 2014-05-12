@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<list key="installedFeatures">
-		<item value="com.amazonaws.eclipse.cloudformation.feature:1.0.0.v201403191540"/>
-		<item value="com.amazonaws.eclipse.dynamodb.feature:1.0.0.v201403191540"/>
-		<item value="com.amazonaws.eclipse.ec2:1.1.0.v201403191540"/>
-		<item value="com.amazonaws.eclipse.rds.feature:1.0.0.v201403191540"/>
+		<item value="com.amazonaws.eclipse.cloudformation.feature:1.0.0.v201404171402"/>
+		<item value="com.amazonaws.eclipse.dynamodb.feature:1.0.0.v201404171402"/>
+		<item value="com.amazonaws.eclipse.ec2:1.1.0.v201404171402"/>
+		<item value="com.amazonaws.eclipse.rds.feature:1.0.0.v201404171402"/>
 		<item value="com.atlassian.connector.eclipse.jira:3.2.2.v20130909"/>
 		<item value="com.atlassian.connector.eclipse.monitor:3.2.2.v20130909"/>
 		<item value="org.aspectj:1.7.3.20130613144500-a"/>
@@ -121,20 +121,20 @@
 		<item value="org.eclipse.zest:1.5.0.201212170307"/>
 		<item value="org.sonatype.m2e.buildhelper.feature:0.15.0.201207090124"/>
 		<item value="org.sonatype.m2e.mavenarchiver.feature:0.15.0.201207090125-signed-20130612210623"/>
-		<item value="org.springframework.ide.eclipse.ajdt.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.aop.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.autowire.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.batch.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.data.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.integration.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.maven.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.mylyn.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.security.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.uaa.feature:3.5.0.201404011422-RELEASE"/>
-		<item value="org.springframework.ide.eclipse.webflow.feature:3.5.0.201404011509-RELEASE"/>
-		<item value="org.springsource.sts.package:3.5.0.201404011851-RELEASE-e38"/>
-		<item value="org.springsource.sts:3.5.0.201404011851-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.ajdt.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.aop.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.autowire.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.batch.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.data.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.integration.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.maven.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.mylyn.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.security.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.uaa.feature:3.5.1.201404300702-RELEASE"/>
+		<item value="org.springframework.ide.eclipse.webflow.feature:3.5.1.201404300732-RELEASE"/>
+		<item value="org.springsource.sts.package:3.5.1.201405030657-RELEASE-e38"/>
+		<item value="org.springsource.sts:3.5.1.201405030657-RELEASE"/>
 	</list>
 	<section name="ChooseWorkspaceDialogSettings">
 		<item value="205" key="DIALOG_Y_ORIGIN"/>
