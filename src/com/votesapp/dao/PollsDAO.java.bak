@@ -21,7 +21,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.util.JSON;
 import com.votesapp.utility.GeocodeImplementation;
-import com.votesapp.utility.NotificationUtility;
 
 public class PollsDAO implements IPollsDAO{
 	private String ipaddress="ds053838.mongolab.com";
@@ -91,16 +90,6 @@ public class PollsDAO implements IPollsDAO{
 					} catch(Exception e){
 						result.put("Msg", "fail");
 						e.printStackTrace();
-					}
-					try{
-						//TODO: get list of members from group and participants
-						if(jsonCreatePollValues.get("poll_public").equals("no")){
-							NotificationUtility notificatioUtility=new NotificationUtility();
-							String response=notificatioUtility.sendNotification(jsonCreatePollValues);
-						}
-						
-					}finally{
-						//do nothing
 					}
 				}
 			}

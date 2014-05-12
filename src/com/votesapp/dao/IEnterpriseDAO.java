@@ -14,6 +14,8 @@ public interface IEnterpriseDAO {
 	public String showEnterpriseUnvotedPolls(String user_name,String enterprise_name) throws Exception;
 
 	public String showEnterprisePollByPollId(String pollId) throws Exception;
+	
+	public String showEnterprisePollByPollIdVotedByMe(String username,String pollId) throws Exception;
 
 	public String voteOnPoll(JSONObject jsonVoteOnPollValues) throws Exception;
 

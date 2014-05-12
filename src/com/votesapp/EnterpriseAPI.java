@@ -81,6 +81,16 @@ public class EnterpriseAPI {
 		return result;
 	}
 	
+	
+	@GET
+	@Path("enterprise_poll/ById/{username}/{pollId}")
+	public String showEnterprisePollByPollIdVotedByMe(@PathParam ("username") String username,@PathParam ("pollId") String pollId) throws Exception{
+		IEnterpriseDAO iEnterpriseDAO=new EnterpriseDAO();
+		String result=iEnterpriseDAO.showEnterprisePollByPollIdVotedByMe(username,pollId);
+		return result;
+	}
+	
+	
 	@GET
 	@Path("enterprise_poll/voteResult/{pollId}")
 	public String showEnterpriseVoteResults(@PathParam ("pollId") String pollId) throws Exception{
@@ -94,7 +104,7 @@ public class EnterpriseAPI {
 	@Path("enterprise_poll/voteResultGeo/{pollId}")
 	public String showEnterpriseVoteResultsGeo(@PathParam ("pollId") String pollId) throws Exception{
 		IEnterpriseDAO iEnterpriseDAO=new EnterpriseDAO();
-		String result=iEnterpriseDAO.showEnterpriseVoteResults(pollId);
+		String result=iEnterpriseDAO.showEnterpriseVoteResultsGeo(pollId);
 
 		return result;
 	}

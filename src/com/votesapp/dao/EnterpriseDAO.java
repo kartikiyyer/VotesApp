@@ -403,6 +403,59 @@ public class EnterpriseDAO implements IEnterpriseDAO {
 	}
 
 
+	
+	public String showEnterprisePollByPollIdVotedByMe(String username,String pollId) throws Exception{
+		JSONObject result= new JSONObject();
+		System.out.println("in showEnterprisePollByPollIdVotedByMe...");
+
+		try{
+			//removing extra chars from the  input --> validation
+			if(null==pollId || pollId.isEmpty()){
+				result.put("Msg", "fail");
+			}else{
+				pollId=pollId.replaceAll("[\\p{P}\\p{S} ]", "").trim();
+
+				try{
+					MongoClient mongo = new MongoClient( ipaddress , 53838 );
+					DB db = mongo.getDB("votesapp");
+					boolean auth = db.authenticate("admin", "password@123".toCharArray());
+					if(auth){
+						System.out.println("connection successfull");
+						DBCollection table = db.getCollection("enterprise_poll_results");
+						BasicDBObject whereQuery=new BasicDBObject();
+						whereQuery.put("enterprise_poll_id",pollId);
+						whereQuery.put("poll_voter_id", username);
+						DBObject getdata = table.findOne(whereQuery);
+						System.out.println("searchById: "+whereQuery);
+						result.put("This_Poll", new JSONObject(JSON.serialize(getdata)));
+						result.put("Msg", "success");
+
+					}else{
+						System.out.println("can not connect");
+						result.put("Msg", "fail");
+					}
+
+				}catch (MongoException me) { 
+					result.put("Msg", "fail");
+					me.printStackTrace(); 
+				} catch(Exception e){
+					result.put("Msg", "fail");
+					e.printStackTrace();
+				}
+			}
+		}catch (JSONException je) { 
+			result.put("Msg", "fail");
+			je.printStackTrace(); 
+		} catch(Exception e){
+			result.put("Msg", "fail");
+			e.printStackTrace();
+		}
+		System.out.println(result);
+		return result.toString();
+	}
+	
+	
+	
 	public String voteOnPoll(JSONObject jsonVoteOnPollValues) throws Exception{
 
 		JSONObject result= new JSONObject();
@@ -645,9 +698,10 @@ public class EnterpriseDAO implements IEnterpriseDAO {
 		EnterpriseDAO edao=new EnterpriseDAO();
 //		edao.showEnterpriseList("4084553112","education");
 //		edao.showEnterpriseFollowList("4084555566");
-//		edao.showEnterpriseVotedPolls("4084553112","SJSU");
-//		edao.showEnterpriseUnvotedPolls("4084553112","SJSU");
+//		edao.showEnterpriseVotedPolls("4084294731","SJSU");
+//		edao.showEnterpriseUnvotedPolls("4084555566","SJSU");
 //		edao.showEnterprisePollByPollId("536dd2b9e4b0e36cd2b8e6d1");
+		edao.showEnterprisePollByPollIdVotedByMe("4084294731", "536dd2b9e4b0e36cd2b8e6d1");
 //		edao.showEnterpriseVoteResults("536dd2b9e4b0e36cd2b8e6d1");
 //		edao.showEnterpriseVoteResultsGeo("536dd2b9e4b0e36cd2b8e6d1");
 	}
